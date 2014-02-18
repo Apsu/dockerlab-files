@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Replace keystone connection string from environment
+sed -i "s|sqlite:////var/lib/keystone/keystone.db|mysql://keystone:keystone@${DB_PORT_3306_TCP_ADDR}/keystone|" /etc/keystone/keystone.conf
+
+keystone-manage db_sync
+
+# Spawn keystone with keystone user
+su -s /bin/sh -c "exec keystone-all" keystone &

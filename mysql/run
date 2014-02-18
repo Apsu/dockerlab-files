@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-""}
+
+if [[ ! -f /var/lib/mysql/ibdata1 ]]; then
+    mysqld --bootstrap --verbose=0 <<-EOF
+    USE mysql;
+    FLUSH PRIVILEGES;
+    GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';
+    UPDATE user SET password=PASSWORD("$MYSQL_ROOT_PASSWORD") WHERE user='root';
+    EOF
+fi
+
+exec mysqld_safe
